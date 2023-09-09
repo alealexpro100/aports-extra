@@ -1,0 +1,41 @@
+# Contributor: Carlo Landmeter <clandmeter@alpinelinux.org>
+# Maintainer: alealexpro100 <alealexn@gmail.com>
+pkgname=vlmcsd
+pkgver=1113
+pkgrel=1
+pkgdesc="KMS Emulator in C"
+url="https://forums.mydigitallife.info/threads/50234"
+arch="all"
+license="other"
+options="!check" # No test suite
+install="$pkgname.pre-install"
+subpackages="$pkgname-doc $pkgname-openrc"
+source="vlmcsd-svn$pkgver.tar.gz::https://github.com/Wind4/vlmcsd/archive/svn$pkgver.tar.gz
+	$pkgname.initd
+	config.patch
+	"
+builddir="$srcdir/vlmcsd-svn$pkgver"
+
+build() {
+	make
+}
+
+package() {
+	install -Dm 755 bin/vlmcsd -t "$pkgdir"/usr/bin/
+	install -Dm 755 bin/vlmcs -t "$pkgdir"/usr/bin/
+	install -Dm 644 etc/vlmcsd.ini -t "$pkgdir"/etc/vlmcsd/
+	install -Dm 644 etc/vlmcsd.kmd -t "$pkgdir"/etc/vlmcsd/
+
+	for i in vlmcs.1 vlmcsd.7 vlmcsd.8 vlmcsd.ini.5; do
+		install -Dm 644 man/$i \
+			"$pkgdir"/usr/share/man/man${i##*.}/$i
+	done
+
+	install -Dm 755 "$srcdir"/vlmcsd.initd "$pkgdir"/etc/init.d/vlmcsd
+}
+
+sha512sums="
+c6d9aef0bf5192726f8a65a0a88db626219d8cf95ccc4cebbdf77fe59dbb65ab294515fec040d22da9b679df5814c8e182ac71226c4fe715c5e2d01ab0f65b8a  vlmcsd-svn1113.tar.gz
+1980c8e68009c9823334223bbeef13824b583626103bf3efc7423103e746c3ff8362f75e2c162954d0b9dad69d441832339632cddfc41ce1afdef0893b332b18  vlmcsd.initd
+cf042d38981e1d8a64f23a88df6312677905f438a2247ee83d416aa4f765953b4bca230104a60e1376ee7446662674bce45fa37f5bc957be26ad965ae957fcab  config.patch
+"
